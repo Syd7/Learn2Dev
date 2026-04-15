@@ -1,15 +1,9 @@
-/* ===========================
-   product.css — Product Detail page only
-   =========================== */
-
 .product-detail-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   align-items: start;
 }
-
-/* ----- Carousel ----- */
 
 .carousel {
   position: relative;
@@ -64,8 +58,6 @@
 .carousel-dots span.active {
   background: #1a56db;
 }
-
-/* ----- Product info ----- */
 
 .product-info h1 {
   font-size: 1.75rem;
