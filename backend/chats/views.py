@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from listings.models import Listing
+from meetups.models import Meetup
 from .models import Conversation, Message
 from .serializers import (
     ConversationListSerializer,
@@ -24,40 +25,73 @@ class ConversationListView(generics.ListCreateAPIView):
     def get_queryset(self):
         return Conversation.objects.filter(
             participants=self.request.user
-        ).select_related('listing').prefetch_related('participants', 'messages')
+        ).select_related('listing', 'meetup').prefetch_related('participants', 'messages')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        listing = Listing.objects.get(pk=serializer.validated_data['listing_id'])
+        validated = serializer.validated_data
+        meetup_id = validated.get('meetup_id')
+        listing_id = validated.get('listing_id')
 
-        # Check if conversation already exists between these users about this listing
+        if meetup_id:
+            meetup = Meetup.objects.get(pk=meetup_id)
+
+            existing = Conversation.objects.filter(
+                meetup=meetup,
+                participants=request.user,
+            ).first()
+
+            if existing:
+                Message.objects.create(
+                    conversation=existing,
+                    sender=request.user,
+                    content=validated['message'],
+                )
+                existing.save()
+                output_serializer = ConversationDetailSerializer(
+                    existing, context={'request': request}
+                )
+                return Response(output_serializer.data, status=status.HTTP_200_OK)
+
+            conversation = Conversation.objects.create(meetup=meetup)
+            conversation.participants.add(request.user, meetup.creator)
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                content=validated['message'],
+            )
+            output_serializer = ConversationDetailSerializer(
+                conversation, context={'request': request}
+            )
+            return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+        listing = Listing.objects.get(pk=listing_id)
+
         existing = Conversation.objects.filter(
             listing=listing,
             participants=request.user,
         ).filter(participants=listing.seller).first()
 
         if existing:
-            # Add message to existing conversation
             Message.objects.create(
                 conversation=existing,
                 sender=request.user,
-                content=serializer.validated_data['message'],
+                content=validated['message'],
             )
-            existing.save()  # Update updated_at
+            existing.save()
             output_serializer = ConversationDetailSerializer(
                 existing, context={'request': request}
             )
             return Response(output_serializer.data, status=status.HTTP_200_OK)
 
-        # Create new conversation
         conversation = Conversation.objects.create(listing=listing)
         conversation.participants.add(request.user, listing.seller)
         Message.objects.create(
             conversation=conversation,
             sender=request.user,
-            content=serializer.validated_data['message'],
+            content=validated['message'],
         )
         output_serializer = ConversationDetailSerializer(
             conversation, context={'request': request}
@@ -72,7 +106,7 @@ class ConversationDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Conversation.objects.filter(
             participants=self.request.user
-        ).select_related('listing').prefetch_related('messages', 'messages__sender')
+        ).select_related('listing', 'meetup').prefetch_related('messages', 'messages__sender')
 
 
 class MessageListCreateView(generics.ListCreateAPIView):

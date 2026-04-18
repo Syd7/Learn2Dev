@@ -12,6 +12,10 @@ import Profile from "./pages/Profile.jsx";
 import PublicProfile from "./pages/PublicProfile.jsx";
 import ChatList from "./pages/ChatList.jsx";
 import ChatDetail from "./pages/ChatDetail.jsx";
+import MapPage from "./pages/MapPage.jsx";
+import CreateMeetup from "./pages/CreateMeetup.jsx";
+import MeetupDetail from "./pages/MeetupDetail.jsx";
+import MyMeetups from "./pages/MyMeetups.jsx";
 
 function App() {
     return (
@@ -36,6 +40,10 @@ function App() {
                     <Route path="profile/:username" element={<PublicProfile />} />
                     <Route path="chats" element={<ChatList />} />
                     <Route path="chats/:id" element={<ChatDetail />} />
+                    <Route path="map" element={<MapPage />} />
+                    <Route path="meetups/:id" element={<MeetupDetail />} />
+                    <Route path="create-meetup" element={<CreateMeetup />} />
+                    <Route path="my-meetups" element={<MyMeetups />} />
                 </Route>
             </Routes>
         </BrowserRouter>

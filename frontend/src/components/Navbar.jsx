@@ -14,6 +14,7 @@ export default function Navbar({ unreadCount = 0 }) {
 
     const navLinks = [
         { to: '/', label: 'Marketplace' },
+        { to: '/map', label: 'Map' },
         { to: '/my-listings', label: 'My Listings' },
         { to: '/chats', label: 'Chats', badge: unreadCount },
         { to: '/profile', label: 'Profile' },

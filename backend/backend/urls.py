@@ -8,6 +8,7 @@ urlpatterns = [
     path('auth/', include('accounts.urls')),
     path('api/listings/', include('listings.urls')),
     path('api/conversations/', include('chats.urls')),
+    path('api/meetups/', include('meetups.urls')),
 ]
 
 if settings.DEBUG:

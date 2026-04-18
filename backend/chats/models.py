@@ -8,6 +8,15 @@ class Conversation(models.Model):
         Listing,
         on_delete=models.CASCADE,
         related_name='conversations',
+        null=True,
+        blank=True,
+    )
+    meetup = models.ForeignKey(
+        'meetups.Meetup',
+        on_delete=models.CASCADE,
+        related_name='conversations',
+        null=True,
+        blank=True,
     )
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -18,7 +27,11 @@ class Conversation(models.Model):
 
     def __str__(self):
         participants = ', '.join(u.username for u in self.participants.all())
-        return f"Conversation about {self.listing.title} ({participants})"
+        if self.listing:
+            return f"Conversation about {self.listing.title} ({participants})"
+        if self.meetup:
+            return f"Conversation about {self.meetup.title} ({participants})"
+        return f"Conversation ({participants})"
 
 
 class Message(models.Model):

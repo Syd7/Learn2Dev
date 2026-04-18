@@ -11,6 +11,13 @@ export const createConversation = (listingId, message) => {
     });
 };
 
+export const createMeetupConversation = (meetupId, message) => {
+    return axiosInstance.post('/api/conversations/', {
+        meetup_id: meetupId,
+        message,
+    });
+};
+
 export const getConversation = (id) => {
     return axiosInstance.get(`/api/conversations/${id}/`);
 };
