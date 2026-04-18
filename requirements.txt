@@ -4,7 +4,7 @@ django-cors-headers>=4.3.0
 django-filter>=24.1
 python-dotenv>=1.0.0
 
-# psycopg2-binary>=2.9.9   # PostgreSQL
+psycopg2-binary>=2.9.9   # PostgreSQL
 # mysqlclient>=2.2.4     # MySQL (optional)
 
 # Auth / users
@@ -17,7 +17,8 @@ Pillow>=10.2.0
 django-extensions>=3.2.3
 
 # Production
-# gunicorn>=21.2.0
-# whitenoise>=6.6.0
+gunicorn>=21.2.0
+whitenoise>=6.6.0
 
 drf-spectacular>=0.27.1  # API docs
+dj-database-url>=2.1.0
